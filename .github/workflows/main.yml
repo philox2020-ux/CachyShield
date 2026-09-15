@@ -1,0 +1,51 @@
+name: Cross-Platform Desktop Production Multi-Compiler Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout Code Repository Source
+      uses: actions/checkout@v4
+    - name: Set Up Python Runtime Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install Critical Software Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller tkinterdnd2
+    - name: Trigger PyInstaller Native Cross-Compilation Build
+      run: |
+        python -m PyInstaller --onefile --collect-all tkinterdnd2 --name=CachyShield gui.py
+    - name: Upload Finished Compiled EXE to GitHub Release Assets Locker
+      uses: actions/upload-artifact@v4
+      with:
+        name: CachyShield-Windows-EXE
+        path: dist/CachyShield.exe
+
+  build-linux-binary:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code Repository Source
+      uses: actions/checkout@v4
+    - name: Set Up Python Runtime Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install Linux Compiler Modules
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller tkinterdnd2
+    - name: Bundle Standalone Linux App Pack
+      run: |
+        python -m PyInstaller --onefile --collect-all tkinterdnd2 --name=CachyShield gui.py
+    - name: Upload Finished Universal Linux Application Binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: CachyShield-Universal-Linux-Binary
+        path: dist/CachyShield
